@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Images for Media Wall</title>
+    <link>http://salem-media-lib.appspot.com</link>
+    <atom:link href="http://salem-media-lib.appspot.com" rel="self" type="application/rss+xml" />
+    <description>Images for Media Wall</description>
+    {%for item in items %}
+    <item>
+    <title>{{item[2]}}</title>
+      <media:title>{{item[2]}}</media:title>
+      <media:content url = "{{item[0]}}" type="image/{{item[1]}}">
+        <media:description>{{item[2]}}</media:description>
+      </media:content>
+      <guid>{{item[0]}}</guid>
+    </item>
+    {%endfor%}
+  </channel>
+</rss>
