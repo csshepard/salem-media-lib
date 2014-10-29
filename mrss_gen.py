@@ -40,8 +40,8 @@ def get_links(page, netloc):
             if link_list[1] == '':
                 link_list[1] = netloc
             link_split = link_list[2].split('.')
-            if link_split[-1] in supported_formats.keys():
-                extension = supported_formats[link_split[-1]]
+            if link_split[-1].lower() in supported_formats.keys():
+                extension = supported_formats[link_split[-1].lower()]
                 desc = link_list[2].split('/')[-1]
                 link = urllib.parse.urlunparse(link_list)
                 if (link, extension, desc) not in links:
