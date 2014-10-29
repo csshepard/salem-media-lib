@@ -1,6 +1,6 @@
 __author__ = 'chris.shepard'
 from bs4 import BeautifulSoup
-from flask import Flask, make_response, render_template, request
+from flask import Flask, make_response, render_template, request, url_for
 import urllib.request
 import urllib.parse
 
@@ -10,10 +10,9 @@ app = Flask(__name__)
 @app.route('/')
 def mrss_gen():
     url = request.args.get('url', "https://sites.google.com/a/salem.edu/media-wall/home/media-library")
-    if url[0].lower() != 'h' and url[0] != '/':
-        url = '//' + url
     url_parsed = urllib.parse.urlparse(url, 'https')
-    print(url_parsed)
+    if url_parsed.netloc == '':
+        url_parsed = urllib.parse.urlparse('//'+url, 'https')
     try:
         page = urllib.request.urlopen(url_parsed.geturl())
     except urllib.error.URLError:
@@ -47,6 +46,8 @@ def get_links(page, netloc):
                 link = urllib.parse.urlunparse(link_list)
                 if (link, extension, desc) not in links:
                     links.append((link, extension, desc))
+    if len(links) == 0:
+        links.append((url_for('static', filename='mrss_default.jpg', _external=True, _scheme='https'), 'jpeg', 'No Media Found'))
     return links
 
 if __name__ == '__main__':
