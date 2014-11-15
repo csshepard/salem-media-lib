@@ -19,7 +19,7 @@ def mrss_gen():
         return make_response(url_parsed.geturl()+' not found', 404)
     links = get_links(page.read(), url_parsed.netloc)
     res = make_response(render_template('mrss_template.xml', items=links), 200)
-    res.headers['Content-Type'] = 'application/rss+xml; charset=UTF-8'
+    res.headers['Content-Type'] = 'text/xml; charset=UTF-8'
     return res
 
 
