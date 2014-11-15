@@ -2,8 +2,8 @@
 <rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Images for Media Wall</title>
-    <link>http://salem-media-lib.appspot.com</link>
-    <atom:link href="http://salem-media-lib.herokuapp.com" rel="self" type="text/xml" />
+    <link>https://salem-media-lib.herokuapp.com</link>
+    <atom:link href="https://salem-media-lib.herokuapp.com" rel="self" type="text/xml" />
     <description>Images for Media Wall</description>
     {%for item in items %}
     <item>
