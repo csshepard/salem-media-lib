@@ -1,23 +1,27 @@
 __author__ = 'chris.shepard'
 from bs4 import BeautifulSoup
 from flask import Flask, make_response, render_template, request, url_for
-import urllib.request
 import urllib.parse
+import requests
 
 app = Flask(__name__)
 
 
 @app.route('/')
 def mrss_gen():
-    url = request.args.get('url', "https://sites.google.com/a/salem.edu/media-wall/home/media-library")
+    url = request.args.get('url',
+                           "https://sites.google.com/a/salem.edu/"
+                           "media-wall/home/media-library")
     url_parsed = urllib.parse.urlparse(url, 'https')
     if url_parsed.netloc == '':
         url_parsed = urllib.parse.urlparse('//'+url, 'https')
     try:
-        page = urllib.request.urlopen(url_parsed.geturl())
-    except urllib.error.URLError:
-        return make_response(url_parsed.geturl()+' not found', 404)
-    links = get_links(page.read(), url_parsed.netloc)
+        page = requests.get(url_parsed.geturl())
+        links = get_links(page.text, url_parsed.netloc)
+    except requests.exceptions.ConnectionError:
+        links = [(url_for('static', filename='mrss_default.jpg',
+                      _external=True, _scheme='https'), 'jpeg',
+                      'No Media Found')]
     res = make_response(render_template('mrss_template.xml', items=links), 200)
     res.headers['Content-Type'] = 'text/xml; charset=UTF-8'
     return res
@@ -32,8 +36,8 @@ def get_links(page, netloc):
                          'tiff': 'tiff',
                          'tif': 'tiff'}
     soup = BeautifulSoup(page)
-    for atag in soup.find_all('a'):
-        link = atag.get('href')
+    for a_tag in soup.find_all('a'):
+        link = a_tag.get('href')
         if link is not None:
             link_list = list(urllib.parse.urlparse(link, 'https'))
             link_list[3] = link_list[4] = link_list[5] = ''
@@ -47,8 +51,11 @@ def get_links(page, netloc):
                 if (link, extension, desc) not in links:
                     links.append((link, extension, desc))
     if len(links) == 0:
-        links.append((url_for('static', filename='mrss_default.jpg', _external=True, _scheme='https'), 'jpeg', 'No Media Found'))
+        links.append((url_for('static', filename='mrss_default.jpg',
+                      _external=True, _scheme='https'), 'jpeg',
+                      'No Media Found'))
     return links
 
 if __name__ == '__main__':
+    app.debug = True
     app.run()
